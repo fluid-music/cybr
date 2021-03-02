@@ -54,8 +54,8 @@ cybr -h|--help [-i ...]          Print detailed info for subsequent arguments
 Most work happens on the `develop` branch:
 
 ```
-git clone https://github.com/CharlesHolbrow/cybr.git
-cd cybr/server
+git clone https://github.com/fluid-music/cybr.git
+cd cybr
 git checkout develop
 git submodule update --init --recursive
 ```
