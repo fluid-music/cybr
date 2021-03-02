@@ -153,7 +153,7 @@ const String CLIApp::getApplicationName()
 
 const String CLIApp::getApplicationVersion()
 {
-    return "0.1.0";
+    return ProjectInfo::versionString;
 }
 
 
@@ -585,6 +585,15 @@ void CLIApp::onRunning(ArgumentList argumentList)
                 return;
             }
             queryPluginParamPoints(engine, pluginName, paramName);
+        }});
+    
+    cApp.addCommand({
+        "-v|--version",
+        "-v|--version",
+        "Print the cybr version",
+        "Print the cybr semver version number",
+        [](const ArgumentList&) {
+            std::cout << ProjectInfo::versionString << std::endl;
         }});
 
     // App search paths
