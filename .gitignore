@@ -1,2 +1,2 @@
-server/Builds/
-.DS_Store
+Builds/
+**.DS_Store
