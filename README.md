@@ -17,17 +17,13 @@ cd cybr
 git submodule update --init --recursive
 ```
 
-To build cybr, use the open `cybr.jucer` using the [Projucer](https://juce.com/discover/projucer) and create an IDE project for your platform. `cybr.jucer` is supports the following development environments.
+To build `cybr`, open `cybr.jucer` using the [Projucer](https://juce.com/discover/projucer) and create an IDE project for your platform. `cybr.jucer` supports the following development environments:
 
 - Windows: Visual Studio
 - MacOS: XCode
 - Linux: Makefile
 
-Note that by default, `cybr.jucer` expects you to have a version of the Projucer compiled in GPL mode. If you downloaded the Projucer from the JUCE website, you may need to update `cybr.jucer` by removing `JUCER_ENABLE_GPL_MODE=1` from the "Preprocessor Definitions" field.
-
-### Building for MacOS and Windows
-
-**Add**
+Note that by default, `cybr.jucer` expects you to have a version of the Projucer compiled in GPL mode. If you downloaded the Projucer from the JUCE website, it will not be in GPL mode and you may need to update `cybr.jucer` by removing `JUCER_ENABLE_GPL_MODE=1` from the "Preprocessor Definitions" textbox.
 
 ### Building in Linux
 
@@ -37,18 +33,17 @@ If you do not need [JACK](https://jackaudio.org/) support, disable it in the
 projucer project via `modules -> juce_audio_devices -> JUCE_JACK`. If you leave
 JACK enabled, make sure that you have the JACK development files installed:
 
-```
+```sh
 sudo apt install libjack-jackd2-dev # Ubuntu/Debian
 ```
 
-Save the projucer project with `^+p` to generate `Builds/LinuxMakefile/Makefile`.
+Save the `cybr.jucer` project with `^+p`. This will generate a makefile in `Builds/LinuxMakefile/Makefile`.
 
 ```sh
 cd Builds/LinuxMakefile/
 make                     # build debug binary
 env CONFIG=Release make  # build release binary
 ```
-
 
 ## CLI
 
@@ -79,13 +74,14 @@ cybr --print-config-filename     Print the complete settings filename.
 cybr -p                          Play the active edit
 cybr --list-io                   Print the engine's MIDI and Wave IO devices
 cybr --list-edit-inputs          Print edit inputs (only print available inputs)
-cybr --list-state                Print type of top level children in the edit
+cybr --list-state                Print type of top level chilren in the edit
 cybr --target-port=9999          Set OSC destination port
 cybr --target-host=127.0.0.1     Set OSC Destination hostname
 cybr --ping-osc[=100]            Repeatedly send a test osc message
 cybr --jack-test                 check if jack audio is supported
 cybr --print-block-size          Print audio block size
 cybr --query-param=plugin,param  Query and print data points for a plugin parameter
+cybr -v|--version                Print the cybr version
 cybr --preset-path[=./path|!]    Print/Add/Reset preset search path
 cybr --sample-path[=./path|!]    Print/Add/Reset sample search path
 cybr -h|--help [-i ...]          Print detailed info for subsequent arguments
