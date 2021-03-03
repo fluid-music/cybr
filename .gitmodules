@@ -1,3 +1,6 @@
 [submodule "tracktion_engine"]
 	path = tracktion_engine
 	url = https://github.com/Tracktion/tracktion_engine.git
+[submodule "FST"]
+	path = FST
+	url = git@github.com:CharlesHolbrow/FST.git
