@@ -138,6 +138,12 @@ cybr::OSCMessage FluidOscServer::handleOscMessage (const cybr::OSCMessage& messa
     if (msgAddressPattern.matches({"/tempo/set/"})) return setTempo(message);
     if (msgAddressPattern.matches({"/content/clear"})) return clearContent(message);
     if (msgAddressPattern.matches({"/tempo/set/timesig"})) return setTimeSignatureAt(message);
+    if (msgAddressPattern.matches({"/version"})) return {
+        "/version/reply",
+        0,
+        cybr::OSCArgument(ProjectInfo::versionString),
+        cybr::OSCArgument(ProjectInfo::versionNumber)
+    };
 
     printOscMessage(message);
     cybr::OSCMessage error("/error");
@@ -2033,7 +2039,7 @@ cybr::OSCMessage FluidOscServer::handleSamplerMessage(const cybr::OSCMessage &me
 }
 
 cybr::OSCMessage FluidOscServer::handleTransportMessage(const cybr::OSCMessage& message) {
-    cybr::OSCMessage reply("/transport/reply");
+    cybr::OSCMessage reply(message.getAddressPattern().toString() + "/reply");
     if (!activeCybrEdit) {
         String errorString = "Cannot update transport: No active edit";
         constructReply(reply, 1, errorString);

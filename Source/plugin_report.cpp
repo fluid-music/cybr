@@ -55,7 +55,7 @@ JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wnon-virtual-dtor",
 #endif
 
 #if (JUCE_PLUGINHOST_VST)
-#include "pluginterfaces/vst2.x/aeffect.h" // Vst2.x
+#include "pluginterfaces/vst2.x/aeffect.h"
 #endif
 
 using namespace juce;
