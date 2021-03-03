@@ -1,4 +1,4 @@
-## Cybr Audio Server
+# Cybr Audio Server
 
 The `cybr` server is a companion to the [`fluid-music` JavaScript library](https://www.npmjs.com/package/fluid-music), which enables you to:
 
@@ -6,6 +6,49 @@ The `cybr` server is a companion to the [`fluid-music` JavaScript library](https
 - Use and configure VST plugins from JavaScript
 
 To get the most out of the the fluid music system, you will want to run an instance of `cybr` alongside your JavaScript code.
+
+## Development
+
+`cybr` uses git submodules for managing dependencies. You can checkout all the dependencies with the following command:
+
+```
+git clone https://github.com/fluid-music/cybr.git
+cd cybr
+git submodule update --init --recursive
+```
+
+To build cybr, use the open `cybr.jucer` using the [Projucer](https://juce.com/discover/projucer) and create an IDE project for your platform. `cybr.jucer` is supports the following development environments.
+
+- Windows: Visual Studio
+- MacOS: XCode
+- Linux: Makefile
+
+Note that by default, `cybr.jucer` expects you to have a version of the Projucer compiled in GPL mode. If you downloaded the Projucer from the JUCE website, you may need to update `cybr.jucer` by removing `JUCER_ENABLE_GPL_MODE=1` from the "Preprocessor Definitions" field.
+
+### Building for MacOS and Windows
+
+**Add**
+
+### Building in Linux
+
+First open `cybr.jucer` in [Projucer](https://juce.com/discover/projucer).
+
+If you do not need [JACK](https://jackaudio.org/) support, disable it in the
+projucer project via `modules -> juce_audio_devices -> JUCE_JACK`. If you leave
+JACK enabled, make sure that you have the JACK development files installed:
+
+```
+sudo apt install libjack-jackd2-dev # Ubuntu/Debian
+```
+
+Save the projucer project with `^+p` to generate `Builds/LinuxMakefile/Makefile`.
+
+```sh
+cd Builds/LinuxMakefile/
+make                     # build debug binary
+env CONFIG=Release make  # build release binary
+```
+
 
 ## CLI
 
@@ -47,68 +90,3 @@ cybr --preset-path[=./path|!]    Print/Add/Reset preset search path
 cybr --sample-path[=./path|!]    Print/Add/Reset sample search path
 cybr -h|--help [-i ...]          Print detailed info for subsequent arguments
 ```
-
-
-## Development
-
-Most work happens on the `develop` branch:
-
-```
-git clone https://github.com/fluid-music/cybr.git
-cd cybr
-git checkout develop
-git submodule update --init --recursive
-```
-### Building for MacOS and Windows
-
-**Add**
-
-### Building in Linux
-
-First open `cybr.jucer` in [Projucer](https://juce.com/discover/projucer).
-
-If you do not need [JACK](https://jackaudio.org/) support, disable it in the
-projucer project via `modules -> juce_audio_devices -> JUCE_JACK`. If you leave
-JACK enabled, make sure that you have the JACK development files installed:
-
-```
-sudo apt install libjack-jackd2-dev # Ubuntu/Debian
-```
-
-Save the projucer project with `^+p` to generate `Builds/LinuxMakefile/Makefile`.
-
-```sh
-cd Builds/LinuxMakefile/
-make                     # build debug binary
-env CONFIG=Release make  # build release binary
-```
-
-## File Search Paths
-
-When running as a server, some methods like the one below accept a file name among their inputs.
-
-- `/audiotrack/insert/wav` (use `--sample-path` to view/update paths)
-- `/plugin/sampler/add` (use `--sample-path` to view/update paths)
-- `/plugin/load` (use `--preset-path` to view/update paths)
-
-How do these work, and what paths to they search? Generally, these tend to work like this:
-
-1. If an absolute path is specified, use that.
-1. Check if the file is relative to the active edit
-1. Search the configurable list of paths for the relevant file type.
-
-Here are the current defaults on mac (these will look different on Windows and Linux). Note that you can change these defaults with the relevant CLI.
-
-- `/audiotrack/insert/wav` and `/plugin/sampler/add`
-  1. `~/Library/Application Support/cybr/sample`
-- `/plugin/load`
-  1. `~/Library/Application Support/cybr/preset`
-  1. `~/Library/Application Support/Tracktion/Waveform/Presets`
-
-Note that `/plugin/load` and `/plugin/save` expect to look for `.trkpreset` files. If the filename supplied does not have a `.trkpreset` extension, one will be added automatically. This means that the methods can simply specify a preset name like `'4OSC Clinics Unison WMF'`, and if Tracktion Waveform is installed.
-
-Note that `/plugin/save` will save preset files in the *first* directory in the preset search path. Currently, saving a plugin with an absolute pathname is not supported.
-
-Under the hood, these methods use the `CybrSearchPath` class to search a list of directories. These directories can be configured with the `--sample-path=/some/path` and `--preset-path=/some/path` command line arguments. These modify the cybr settings file by adding the supplied path to the start of the search path. Note that OSC method handlers will still check relative to the active edit file when searching for files.
-
-It is worth looking at the OSC method handlers, because these might further customize the behavior.
