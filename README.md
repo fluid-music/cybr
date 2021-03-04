@@ -1,11 +1,11 @@
 # Cybr Audio Server
 
-The `cybr` server is a companion to the [`fluid-music` JavaScript library](https://www.npmjs.com/package/fluid-music), which enables you to:
+The `cybr` server is a companion to the [`fluid-music` JavaScript library](https://www.npmjs.com/package/fluid-music). When using `cybr` with `fluid-music`, you can:
 
 - Play and render audio from JavaScript
 - Use and configure VST plugins from JavaScript
 
-To get the most out of the the fluid music system, you will want to run an instance of `cybr` alongside your JavaScript code.
+To get the most out of the the Fluid Music system, you will want to run an instance of `cybr` alongside your JavaScript code.
 
 ## Development
 
