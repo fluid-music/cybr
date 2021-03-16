@@ -129,6 +129,7 @@ cybr::OSCMessage FluidOscServer::handleOscMessage (const cybr::OSCMessage& messa
     if (msgAddressPattern.matches({"/clip/trim/seconds"})) return trimClipBySeconds(message);
     if (msgAddressPattern.matches({"/clip/source/offset/seconds"})) return offsetClipSourceInSeconds(message);
     if (msgAddressPattern.matches({"/audioclip/set/db"})) return setClipDb(message);
+    if (msgAddressPattern.matches({"/audioclip/set/pan"})) return setClipPan(message);
     if (msgAddressPattern.matches({"/audioclip/set/pitch"})) return setClipPitch(message);
     if (msgAddressPattern.matches({"/audioclip/set/stretch-mode"})) return setClipStretchMode(message);
     if (msgAddressPattern.matches({"/audioclip/set/speed-ratio"})) return setClipSpeedRatio(message);
@@ -301,6 +302,35 @@ cybr::OSCMessage FluidOscServer::setClipDb(const cybr::OSCMessage& message) {
     }
 
     audioClip->setGainDB(dBFS);
+    reply.addInt32(0);
+    return reply;
+}
+
+cybr::OSCMessage FluidOscServer::setClipPan(const cybr::OSCMessage& message) {
+    cybr::OSCMessage reply("/audioclip/set/pan/reply");
+
+    if (!selectedClip) {
+        String errorString = "Cannot set audio clip pan: no clip selected";
+        constructReply(reply, 1, errorString);
+        return reply;
+    }
+
+    auto* audioClip = dynamic_cast<te::AudioClipBase*>(selectedClip);
+    if (!audioClip) {
+        String errorString = "Cannot set audio clip pan: selected clip is not an audio clip";
+        constructReply(reply, 1, errorString);
+        return reply;
+    }
+
+    if (!message.size() || !message[0].isFloat32()) {
+        String errorString = "Cannot set audio clip gain: missing pan float argument";
+        constructReply(reply, 1, errorString);
+        return reply;
+    }
+
+    float panValue = message[0].getFloat32();
+
+    audioClip->setPan(panValue);
     reply.addInt32(0);
     return reply;
 }
