@@ -1002,14 +1002,22 @@ cybr::OSCMessage FluidOscServer::ensureSend(const cybr::OSCMessage& message) {
 
     String busName = message[0].getString();
     float gainLevel = 0;
-    String position = "post-gain";
 
-    if (message.size() >= 2 && message[1].isFloat32()) {
+    // We want to be able to use this handler to select the send plugin without
+    // setting the gain if no gain is supplied.
+    bool setGainLevelRequested = message.size() >= 2 && message[1].isFloat32();
+
+    if (setGainLevelRequested) {
         gainLevel = message[1].getFloat32();
     }
 
     if (message.size() >= 3 && message[2].isString()) {
-        position = message[2].getString();
+        String position = message[2].getString();
+        if (!position.equalsIgnoreCase("post-gain")) {
+            String errorString = "Cannot ensure send: currently only post-gain sends are supported";
+            constructReply(reply, 1, errorString);
+            return reply;
+        }
     }
 
     // cybr identifies busses by a name
@@ -1017,12 +1025,6 @@ cybr::OSCMessage FluidOscServer::ensureSend(const cybr::OSCMessage& message) {
 
     if (busIndex == -1) {
         String errorString = "Cannot create send: no available busses";
-        constructReply(reply, 1, errorString);
-        return reply;
-    }
-
-    if (!position.equalsIgnoreCase("post-gain")) {
-        String errorString = "Cannot ensure send: currently only post-gain sends are supported";
         constructReply(reply, 1, errorString);
         return reply;
     }
@@ -1057,6 +1059,13 @@ cybr::OSCMessage FluidOscServer::ensureSend(const cybr::OSCMessage& message) {
     }
 
     if (sendPlugin) {
+        selectedPlugin = sendPlugin;
+        for (auto p : sendPlugin->getAutomatableParameters()) {
+            std::cout << "Param:" << p->getParameterName() << std::endl;
+        }
+    }
+
+    if (setGainLevelRequested && sendPlugin) {
         sendPlugin->setGainDb(gainLevel);
     }
     return reply;
