@@ -130,6 +130,11 @@ void CLIApp::initialise(const String& commandLine)
     engine.getPluginManager().createBuiltInType<OpenFrameworksPlugin>();
     appJobs.addChangeListener(this);
     MessageManager::getInstance()->callAsync([this, argumentList] { onRunning(argumentList); });
+    
+    #ifdef RUN_TESTS
+        FluidOscServerTest fluidOscServerTests;
+        fluidOscServerTests.runTest();
+    #endif
 }
 
 void CLIApp::shutdown()
