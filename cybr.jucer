@@ -3,6 +3,14 @@
 <JUCERPROJECT id="gn3eC9" name="cybr" projectType="consoleapp" defines="DONT_SET_USING_JUCE_NAMESPACE=1 JUCER_ENABLE_GPL_MODE=1"
               jucerFormatVersion="1" cppLanguageStandard="17" version="0.3.0">
   <MAINGROUP id="JTqeoX" name="cybr">
+    <GROUP id="{5044F195-615F-1451-D592-38DAB2DA1E38}" name="Tests">
+      <FILE id="Z02Z3k" name="AudiotrackHandlerTests.cpp" compile="1" resource="0"
+            file="Tests/AudiotrackHandlerTests.cpp"/>
+      <FILE id="s3tUOS" name="MidiclipHandlerTests.cpp" compile="1" resource="0"
+            file="Tests/MidiclipHandlerTests.cpp"/>
+      <FILE id="bI9QBd" name="Tests.cpp" compile="1" resource="0" file="Tests/Tests.cpp"/>
+      <FILE id="SJsT1N" name="Tests.h" compile="0" resource="0" file="Tests/Tests.h"/>
+    </GROUP>
     <GROUP id="{E03437D9-F7F3-5413-6A30-51BDC7A4D4BC}" name="Source">
       <FILE id="LeSCei" name="FluidOscServer.h" compile="0" resource="0"
             file="Source/FluidOscServer.h"/>

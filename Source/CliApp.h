@@ -21,6 +21,11 @@
 #include "FluidIpcServer.h"
 #include "CybrSearchPath.h"
 
+#ifdef RUN_TESTS
+    #include "../Tests/Tests.h"
+#endif
+
+
 //==============================================================================
 class CybrPropertyStorage : public te::PropertyStorage {
 public:

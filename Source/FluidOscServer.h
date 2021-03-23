@@ -97,8 +97,7 @@ public:
 
     SelectedObjects getSelectedObjects();
 
-private:
-
+protected:
     void constructReply(cybr::OSCMessage &reply, int error, juce::String message);
     void constructReply(cybr::OSCMessage &reply, juce::String message);
     
