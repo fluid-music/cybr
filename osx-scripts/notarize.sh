@@ -6,7 +6,7 @@
 #     exit 1
 # fi
 
-PKG_FILE="../Builds/MacOSX/build/cybr-0.2.pkg"
+PKG_FILE="../Builds/MacOSX/build/cybr-0.3.0.pkg"
 echo "Notarizing pkg: $PKG_FILE"
 
 xcrun altool --notarize-app \
