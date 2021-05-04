@@ -297,7 +297,8 @@ void scanVst3(te::Engine& engine)
     std::cout << "Scanning for VST3 plugins..." << std::endl;
 
     juce::VST3PluginFormat vst3;
-    juce::String deadPlugins;
+
+    File deadPlugins = engine.getPropertyStorage().getAppPrefsFolder().getChildFile("crashing-plugins-vst3.txt");
     juce::PluginDirectoryScanner pluginScanner{
         engine.getPluginManager().knownPluginList,
         vst3,
@@ -312,9 +313,8 @@ void scanVst3(te::Engine& engine)
     } while (pluginScanner.scanNextFile(true, pluginName));
 
     // log failures
-    std::cout << "Dead Plugins: " << deadPlugins << std::endl << std::endl;
     for (auto filename : pluginScanner.getFailedFiles()) {
-        std::cout << "Failed to load plugin: " << filename << std::endl;
+        std::cout << "Failed to load VST3 plugin: " << filename << std::endl;
     }
     std::cout << std::endl;
 #endif
@@ -331,7 +331,7 @@ void scanVst2(te::Engine& engine) {
 
     std::cout << "Scanning for VST2 plugins in: " << paths.toString() << std::endl;
 
-    juce::String deadPlugins;
+    File deadPlugins = engine.getPropertyStorage().getAppPrefsFolder().getChildFile("crashing-plugins-vst2.txt");
     juce::PluginDirectoryScanner pluginScanner{
         engine.getPluginManager().knownPluginList,
         vst2,
@@ -346,9 +346,8 @@ void scanVst2(te::Engine& engine) {
     } while (pluginScanner.scanNextFile(true, pluginName));
 
     // log failures
-    std::cout << "Dead Plugins: " << deadPlugins << std::endl << std::endl;
     for (auto filename : pluginScanner.getFailedFiles()) {
-        std::cout << "Failed to load plugin: " << filename << std::endl;
+        std::cout << "Failed to load VST2 plugin: " << filename << std::endl;
     }
     std::cout << std::endl;
 #else
