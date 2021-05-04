@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="gn3eC9" name="cybr" projectType="consoleapp" defines="DONT_SET_USING_JUCE_NAMESPACE=1 JUCER_ENABLE_GPL_MODE=1"
-              jucerFormatVersion="1" cppLanguageStandard="17" version="0.3.0">
+              jucerFormatVersion="1" cppLanguageStandard="17" version="0.3.1">
   <MAINGROUP id="JTqeoX" name="cybr">
     <GROUP id="{5044F195-615F-1451-D592-38DAB2DA1E38}" name="Tests">
       <FILE id="Z02Z3k" name="AudiotrackHandlerTests.cpp" compile="1" resource="0"
