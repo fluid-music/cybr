@@ -231,11 +231,30 @@ void CLIApp::onRunning(ArgumentList argumentList)
         "--scan-plugins", // this is printed by -h
         "Scan for plugins, adding them to the settings file", // printed by -h
         "Searches the default plugin paths, and saves results in the persistent\n\
-        application properties file. Once plugins are saved in the file, you\n\
-        should not need to scan again unless you install more plugins.",
+        application configuration file. Once plugins are saved in the file, you\n\
+        should not need to scan again unless you install more plugins. If a plugin\n\
+        crashes, it will be blacklisted, and subsequent --scan-plugin invocations\n\
+        will skip that plugin. You may need to call --scan-plugins multiple times,\n\
+        once for each plugin that crashes.",
         [this](auto&) {
+            juce::StringArray initialPluginBlacklist = engine.getPluginManager().knownPluginList.getBlacklistedFiles();
+            std::cout << "Number of blacklisted plugins: " << initialPluginBlacklist.size() << std::endl;
+            for (auto filename : initialPluginBlacklist) std::cout << " - " << filename << std::endl;
+
             scanVst2(engine);
             scanVst3(engine);
+        } });
+
+    cApp.addCommand({
+        "--clear-plugins",
+        "--clear-plugins",
+        "Remove known (and blacklisted) plugins from the configuration file",
+        "Removes all plugins from the configuration file, including blacklisted\n\
+        plugins. This will force subsequent calls to --scan-plugins to rescan\n\
+        all plugins on your system",
+        [this](auto&) {
+            engine.getPluginManager().knownPluginList.clear();
+            engine.getPluginManager().knownPluginList.clearBlacklistedFiles();
         } });
 
     cApp.addCommand({
