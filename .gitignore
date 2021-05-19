@@ -1,2 +1,5 @@
-Builds/
+Builds/*
+!Builds/LinuxMakefile
+Builds/LinuxMakefile/*
+!Builds/LinuxMakefile/Makefile
 **.DS_Store
