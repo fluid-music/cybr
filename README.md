@@ -29,7 +29,7 @@ Note that by default, `cybr.jucer` expects you to have a version of the Projucer
 
 You have two options when compiling for linux:
 
-1. Use the default Makefile - Do this if you you want to accept all the default build options. You will need the Jack development files installed.
+1. Use the default Makefile - **Do this if you want to avoid the Projucer**, and you want to accept all the default build options.
 2. Use the [Projucer](https://juce.com/discover/projucer) to generate a customized Makefile - Do this if (for example) you want to compile without Jack support or without VST support.
 
 #### 1. Building for Linux - Default Makefile
@@ -43,6 +43,7 @@ env CONFIG=Release make  # build release binary
 ```
 
 #### 2. Building for Linux - Custom Builds
+
 
 First open `cybr.jucer` in [Projucer](https://juce.com/discover/projucer).
 
