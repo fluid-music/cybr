@@ -25,7 +25,24 @@ To build `cybr`, open `cybr.jucer` using the [Projucer](https://juce.com/discove
 
 Note that by default, `cybr.jucer` expects you to have a version of the Projucer compiled in GPL mode. If you downloaded the Projucer from the JUCE website, it will not be in GPL mode and you may need to update `cybr.jucer` by removing `JUCER_ENABLE_GPL_MODE=1` from the "Preprocessor Definitions" textbox.
 
-### Building in Linux
+### Building for Linux
+
+You have two options when compiling for linux:
+
+1. Use the default Makefile - Do this if you you want to accept all the default build options. You will need the Jack development files installed.
+2. Use the [Projucer](https://juce.com/discover/projucer) to generate a customized Makefile - Do this if (for example) you want to compile without Jack support or without VST support.
+
+#### 1. Building for Linux - Default Makefile
+Make sure that you have the Jack development files installed. Then run `make`.
+
+```sh
+sudo apt install libjack-jackd2-dev # Ubuntu/Debian
+cd Builds/LinuxMakefile/
+make                     # build debug binary
+env CONFIG=Release make  # build release binary
+```
+
+#### 2. Building for Linux - Custom Builds
 
 First open `cybr.jucer` in [Projucer](https://juce.com/discover/projucer).
 
