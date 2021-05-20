@@ -185,11 +185,13 @@ void CybrEdit::saveActiveEdit(File outputFile, SamplePathMode mode) {
                 tracksToDo.setBit(i);
             }
         }
+
+        bool useThread = false; // When true, perform render on the calling thread
         te::Renderer::renderToFile({ "Chaz Render Job" },
                                    outputFile,
                                    *edit,
                                    { 0, edit->getLength() },
-                                   tracksToDo, true, {}, false);
+                                   tracksToDo, true, {}, useThread);
     }
     else {
         std::cout
