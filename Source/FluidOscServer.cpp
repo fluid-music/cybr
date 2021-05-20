@@ -1124,7 +1124,7 @@ cybr::OSCMessage FluidOscServer::selectVst2PluginById(const cybr::OSCMessage& me
         }
     }
 
-    constructReply(reply, 1, "Cannot selecte VST2 plugin by ID: plugin not found");
+    constructReply(reply, 1, "Cannot select VST2 plugin by ID: plugin not found");
     return reply;
 }
 

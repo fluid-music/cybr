@@ -15,8 +15,7 @@ void CliUiBehaviour::runTaskWithProgressBar(te::ThreadPoolJobWithProgress& job) 
     while (job.runJob() != juce::ThreadPoolJob::JobStatus::jobHasFinished) {
         std::cout << "\rprogress: " << job.getCurrentTaskProgress() << "                     ";
     }
-    DBG(job.getCurrentTaskProgress());
-    std::cout << std::endl;
+    std::cout << "\rprogress: " << job.getCurrentTaskProgress() << std::endl << "done!" << std::endl;
 }
 
   void CliUiBehaviour::showWarningAlert(const juce::String & title, const juce::String & message)
