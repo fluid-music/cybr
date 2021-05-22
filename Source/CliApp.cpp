@@ -197,6 +197,33 @@ void CLIApp::onRunning(ArgumentList argumentList)
         deivce must support audio output (i.e. not a USB microphone).",
         [](auto&){ return; } // --device-out is handled in initialise. Use noop
     });
+    
+    cApp.addCommand({
+        "-p|--listen-port",
+        "-p|--listen-port=9999",
+        "Choose UDP+TCP port to listen on. Default: " + String(options.listenPort),
+        "Choose UDP and TCP port to listen on.",
+        [this](const ArgumentList& args) {
+            const String portString = args.getValueForOption("-p|--listen-port").trim();
+            if (portString.length() < 1 || !portString.containsOnly("0123456789")) {
+                std::cerr << "Invalid listen-port: " << portString << std::endl;
+                return;
+            }
+            options.listenPort = portString.getIntValue();
+            return;
+        } });
+    
+    cApp.addCommand({
+        "--listen-interface",
+        "--listen-interface=127.0.0.1",
+        "Choose TCP address to listen on. Default: " + options.listenInterface,
+        "Choose TCP address to listen on. Default: " + options.listenInterface + "\n\
+        This affects the TCP server. The UDP server is unconfigurable.",
+        [this](const ArgumentList& args) {
+            options.listenInterface = args.getValueForOption("--listen-interface");
+            return;
+        }
+    });
 
     cApp.addCommand({
         "-f|--fluid-server",
@@ -205,19 +232,23 @@ void CLIApp::onRunning(ArgumentList argumentList)
         "This runs a server that listens for OSC messages",
         [this](auto&) {
             appJobs.fluidIpcServer = std::make_unique<FluidIpcServer>(appJobs.fluidOscServer);
-            if (!appJobs.fluidIpcServer->beginWaitingForSocket(options.listenPort)) {
-                std::cout << "FluidIpcServer: failed to listen on socket" << std::endl;
+
+            // Listen for TCP connections (IPC)
+            if (!appJobs.fluidIpcServer->beginWaitingForSocket(options.listenPort, options.listenInterface)) {
+                std::cout << "FluidIpcServer: failed to listen TCP socket " << options.listenInterface << ":" << options.listenPort  << std::endl;
                 return false;
             }
-            std::cout << "Listening for IPC Connections" << std::endl;
+            std::cout << "Listening for TCP connections on: " << options.listenInterface << ":" << options.listenPort << std::endl;
 
+            // Listen for UDP (port only)
             if (!appJobs.fluidOscServer.connect(options.listenPort)) {
-                std::cout << "FluidOscServer failed to listen on socket" << std::endl;
+                std::cout << "FluidOscServer failed to listen on UDP: port " << options.listenPort << std::endl;
                 return false;
             }
 
             appJobs.setRunForever(true);
-            std::cout << "Listening for UDP Connections" << std::endl;
+            std::cout << "Listening for UDP connections on: port " << options.listenPort << std::endl;
+
             if (cybrEdit) {
                 CybrEdit* newCybrEdit = copyCybrEditForPlayback(*cybrEdit);
                 appJobs.fluidOscServer.activeCybrEdit.reset(newCybrEdit);
@@ -248,7 +279,7 @@ void CLIApp::onRunning(ArgumentList argumentList)
     cApp.addCommand({
         "--clear-plugins",
         "--clear-plugins",
-        "Remove known (and blacklisted) plugins from the configuration file",
+        "Remove known (and blacklisted) plugins from the config file",
         "Removes all plugins from the configuration file, including blacklisted\n\
         plugins. This will force subsequent calls to --scan-plugins to rescan\n\
         all plugins on your system",
@@ -258,8 +289,8 @@ void CLIApp::onRunning(ArgumentList argumentList)
         } });
 
     cApp.addCommand({
-        "-a|--autodetect-pm",
-        "-a|--autodetect-pm",
+        "--autodetect-pm",
+        "--autodetect-pm",
         "Add Tracktion Waveform project manager to the settings file",
         "This is useful if you want to load .tracktionedit files that were\n\
         saved in Waveform. These edits refer to audio clips with an id, not a\n\
@@ -419,8 +450,8 @@ void CLIApp::onRunning(ArgumentList argumentList)
         } });
 
     cApp.addCommand({
-        "-p",
-        "-p",
+        "--play",
+        "--play",
         "Play the active edit",
         "no-op if there is no active edit.",
         [this](auto&) {
