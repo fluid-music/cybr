@@ -13,6 +13,8 @@
 #define DRIVER_CLI_OPTION "--driver"
 #define DEVICE_CLI_OPTION "--device"
 #define OUT_DEVICE_CLI_OPTION "--device-out"
+#define LISTEN_PORT_CLI_OPTION "-p|--listen-port"
+#define LISTEN_INTERFACE_CLI_OPTION "--listen-interface"
 
 bool CLIApp::moreThanOneInstanceAllowed() { return true; }
 void CLIApp::anotherInstanceStarted(const String&) {}
@@ -54,6 +56,23 @@ void CLIApp::initialise(const String& commandLine)
             std::cout << "Invalid " << DRIVER_CLI_OPTION << " value. Driver not available: " << driverArgument << std::endl;
             quit();
             return;
+        }
+    }
+
+    {
+        const String port = argumentList.getValueForOption(LISTEN_PORT_CLI_OPTION).trim();
+        if (port.isNotEmpty()) {
+            if (port.length() < 1 || !port.containsOnly("0123456789")) {
+                std::cout << "ERROR: Invalid listen-port: " << port << std::endl;
+            } else {
+                options.listenPort = port.getIntValue();
+            }
+        }
+    }
+    {
+        const String interface = argumentList.getValueForOption(LISTEN_INTERFACE_CLI_OPTION).trim();
+        if (interface.isNotEmpty()) {
+            options.listenInterface = interface;
         }
     }
 
@@ -197,32 +216,21 @@ void CLIApp::onRunning(ArgumentList argumentList)
         deivce must support audio output (i.e. not a USB microphone).",
         [](auto&){ return; } // --device-out is handled in initialise. Use noop
     });
-    
+
     cApp.addCommand({
-        "-p|--listen-port",
-        "-p|--listen-port=9999",
-        "Choose UDP+TCP port to listen on. Default: " + String(options.listenPort),
-        "Choose UDP and TCP port to listen on.",
-        [this](const ArgumentList& args) {
-            const String portString = args.getValueForOption("-p|--listen-port").trim();
-            if (portString.length() < 1 || !portString.containsOnly("0123456789")) {
-                std::cerr << "Invalid listen-port: " << portString << std::endl;
-                return;
-            }
-            options.listenPort = portString.getIntValue();
-            return;
-        } });
-    
+        LISTEN_INTERFACE_CLI_OPTION,
+        LISTEN_INTERFACE_CLI_OPTION + String("=127.0.0.1"),
+        "Choose TCP address to listen on. Default: 127.0.0.1",
+        "This affects the TCP server. The UDP server interface is unconfigurable.",
+        [](auto&) { return; } // handled in initialization. Use noop
+    });
+
     cApp.addCommand({
-        "--listen-interface",
-        "--listen-interface=127.0.0.1",
-        "Choose TCP address to listen on. Default: " + options.listenInterface,
-        "Choose TCP address to listen on. Default: " + options.listenInterface + "\n\
-        This affects the TCP server. The UDP server is unconfigurable.",
-        [this](const ArgumentList& args) {
-            options.listenInterface = args.getValueForOption("--listen-interface");
-            return;
-        }
+        LISTEN_PORT_CLI_OPTION,
+        LISTEN_PORT_CLI_OPTION + String("=9999"),
+        "Choose TCP+UDP port to listen on. Default: 9999",
+        "This affects both the TCP port AND the UDP Port.",
+        [](auto&) { return; } // handled in initialization. Use noop
     });
 
     cApp.addCommand({
@@ -693,7 +701,7 @@ void CLIApp::onRunning(ArgumentList argumentList)
                     << "    cybr -e ./somefile.tracktionedit" << std::endl
                     << std::endl
                     << "Below is a list of possible arguments. Argument order is significant." << std::endl
-                    << "Use -h  --some-arg to get more info about an argument." << std::endl;
+                    << "Use '-h --some-arg' to get more info about an argument." << std::endl;
                 // I believe args are only used to get the exe name (cybr), which
                 // is used in the output.
                 cApp.printCommandList(args);
