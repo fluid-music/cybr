@@ -852,7 +852,7 @@ cybr::OSCMessage FluidOscServer::requestRenderedAudioFile(const cybr::OSCMessage
     reply.addInt32(0);
     reply.addString("Successfull retrived renderd audio file");
     reply.addBlob(block);
-//    tempFile.deleteFile();
+    tempFile.deleteFile();
     return reply;
 }
 
