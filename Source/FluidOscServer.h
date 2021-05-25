@@ -66,6 +66,7 @@ public:
     cybr::OSCMessage insertMidiNote(const cybr::OSCMessage& message);
     cybr::OSCMessage insertWaveSample(const cybr::OSCMessage& message);
     cybr::OSCMessage saveActiveEdit(const cybr::OSCMessage& message);
+    cybr::OSCMessage requestRenderedAudioFile(const cybr::OSCMessage & message);
     cybr::OSCMessage activateEditFile(const cybr::OSCMessage& message);
     cybr::OSCMessage changeWorkingDirectory(const cybr::OSCMessage& message);
     cybr::OSCMessage handleSamplerMessage(const cybr::OSCMessage& message);

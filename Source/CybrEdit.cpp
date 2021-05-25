@@ -161,7 +161,7 @@ void CybrEdit::junk()
     std::cout << std::endl;
 }
 
-void CybrEdit::saveActiveEdit(File outputFile, SamplePathMode mode) {
+bool CybrEdit::saveActiveEdit(File outputFile, SamplePathMode mode) {
     auto outputExt = outputFile.getFileExtension().toLowerCase(); // resolve relative if needed
     
     if (outputExt == ".tracktionedit") {
@@ -172,7 +172,7 @@ void CybrEdit::saveActiveEdit(File outputFile, SamplePathMode mode) {
         setClipAndSamplerSourcesToDirectFileReferences(*edit, mode);
         // .save and .saveAs may be silent no-ops unless we markAsChanged()
         edit->markAsChanged();
-        te::EditFileOperations(*edit).saveAs(outputFile, true);
+        return te::EditFileOperations(*edit).saveAs(outputFile, true);
     }
     else if (outputExt == ".wav")
     {
@@ -187,7 +187,7 @@ void CybrEdit::saveActiveEdit(File outputFile, SamplePathMode mode) {
         }
 
         bool useThread = false; // When true, perform render on the calling thread
-        te::Renderer::renderToFile({ "Chaz Render Job" },
+        return te::Renderer::renderToFile({ "Chaz Render Job" },
                                    outputFile,
                                    *edit,
                                    { 0, edit->getLength() },
@@ -198,6 +198,7 @@ void CybrEdit::saveActiveEdit(File outputFile, SamplePathMode mode) {
         << "Could not save file due to unknown extension: "
         << outputFile.getFullPathName()
         << std::endl;
+        return false;
     }
 }
 

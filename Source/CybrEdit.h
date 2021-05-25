@@ -40,8 +40,8 @@ public:
     void listClips();
     /** Print a list of all the tracks in the edit*/
     void listTracks();
-    /** Save the active edit to a .tracktionedig or .wav file */
-    void saveActiveEdit(juce::File outputFile, SamplePathMode mode = decide);
+    /** Save the active edit to a .tracktionedit or .wav file. Returns true on success. */
+    bool saveActiveEdit(juce::File outputFile, SamplePathMode mode = decide);
     /** List all the top level XML tags of the state */
     void listState();
     /** List all the edit's inputs. Does not create EditPlaybackContext. */

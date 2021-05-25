@@ -35,7 +35,7 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := 
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DDEBUG=1" "-D_DEBUG=1" "-DDONT_SET_USING_JUCE_NAMESPACE=1" "-DJUCER_ENABLE_GPL_MODE=1" "-DJUCER_LINUX_MAKE_6D53C8B4=1" "-DJUCE_APP_VERSION=0.3.1" "-DJUCE_APP_VERSION_HEX=0x301" $(shell pkg-config --cflags alsa freetype2 libcurl webkit2gtk-4.0 gtk+-x11-3.0) -pthread -I../../tracktion_engine/modules/juce/modules/juce_audio_processors/format_types/VST3_SDK -I../../FST -I../../JuceLibraryCode -I../../modules -I../../tracktion_engine/modules/juce/modules -I../../tracktion_engine/modules $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DDEBUG=1" "-D_DEBUG=1" "-DDONT_SET_USING_JUCE_NAMESPACE=1" "-DJUCER_ENABLE_GPL_MODE=1" "-DJUCER_LINUX_MAKE_6D53C8B4=1" "-DJUCE_APP_VERSION=0.3.2" "-DJUCE_APP_VERSION_HEX=0x302" $(shell pkg-config --cflags alsa freetype2 libcurl webkit2gtk-4.0 gtk+-x11-3.0) -pthread -I../../tracktion_engine/modules/juce/modules/juce_audio_processors/format_types/VST3_SDK -I../../FST -I../../JuceLibraryCode -I../../modules -I../../tracktion_engine/modules/juce/modules -I../../tracktion_engine/modules $(CPPFLAGS)
   JUCE_CPPFLAGS_CONSOLEAPP :=  "-DJucePlugin_Build_VST=0" "-DJucePlugin_Build_VST3=0" "-DJucePlugin_Build_AU=0" "-DJucePlugin_Build_AUv3=0" "-DJucePlugin_Build_RTAS=0" "-DJucePlugin_Build_AAX=0" "-DJucePlugin_Build_Standalone=0" "-DJucePlugin_Build_Unity=0"
   JUCE_TARGET_CONSOLEAPP := cybr
 
@@ -56,7 +56,7 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := 
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DNDEBUG=1" "-DDONT_SET_USING_JUCE_NAMESPACE=1" "-DJUCER_ENABLE_GPL_MODE=1" "-DJUCER_LINUX_MAKE_6D53C8B4=1" "-DJUCE_APP_VERSION=0.3.1" "-DJUCE_APP_VERSION_HEX=0x301" $(shell pkg-config --cflags alsa freetype2 libcurl webkit2gtk-4.0 gtk+-x11-3.0) -pthread -I../../tracktion_engine/modules/juce/modules/juce_audio_processors/format_types/VST3_SDK -I../../FST -I../../JuceLibraryCode -I../../modules -I../../tracktion_engine/modules/juce/modules -I../../tracktion_engine/modules $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DNDEBUG=1" "-DDONT_SET_USING_JUCE_NAMESPACE=1" "-DJUCER_ENABLE_GPL_MODE=1" "-DJUCER_LINUX_MAKE_6D53C8B4=1" "-DJUCE_APP_VERSION=0.3.2" "-DJUCE_APP_VERSION_HEX=0x302" $(shell pkg-config --cflags alsa freetype2 libcurl webkit2gtk-4.0 gtk+-x11-3.0) -pthread -I../../tracktion_engine/modules/juce/modules/juce_audio_processors/format_types/VST3_SDK -I../../FST -I../../JuceLibraryCode -I../../modules -I../../tracktion_engine/modules/juce/modules -I../../tracktion_engine/modules $(CPPFLAGS)
   JUCE_CPPFLAGS_CONSOLEAPP :=  "-DJucePlugin_Build_VST=0" "-DJucePlugin_Build_VST3=0" "-DJucePlugin_Build_AU=0" "-DJucePlugin_Build_AUv3=0" "-DJucePlugin_Build_RTAS=0" "-DJucePlugin_Build_AAX=0" "-DJucePlugin_Build_Standalone=0" "-DJucePlugin_Build_Unity=0"
   JUCE_TARGET_CONSOLEAPP := cybr
 

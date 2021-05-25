@@ -120,6 +120,7 @@ cybr::OSCMessage FluidOscServer::handleOscMessage (const cybr::OSCMessage& messa
     if (msgAddressPattern.matches({"/audiotrack/unmute"})) return muteTrack(false);
     if (msgAddressPattern.matches({"/audiotrack/region/render"})) return renderRegion(message);
     if (msgAddressPattern.matches({"/file/save"})) return saveActiveEdit(message);
+    if (msgAddressPattern.matches({"/file/renderer/get/wav"})) return requestRenderedAudioFile(message);
     if (msgAddressPattern.matches({"/cd"})) return changeWorkingDirectory(message);
     if (msgAddressPattern.toString().startsWith({"/transport"})) return handleTransportMessage(message);
     if (msgAddressPattern.matches({"/clip/render"})) return renderClip(message);
@@ -823,6 +824,35 @@ cybr::OSCMessage FluidOscServer::saveActiveEdit(const cybr::OSCMessage &message)
     activeCybrEdit->saveActiveEdit(file, mode);
     reply.addInt32(0);
     reply.addString(file.getFullPathName());
+    return reply;
+}
+
+cybr::OSCMessage FluidOscServer::requestRenderedAudioFile(const cybr::OSCMessage & message) {
+    cybr::OSCMessage reply("/file/renderer/get/wav/reply");
+
+    if (!activeCybrEdit) {
+        String errorString = "Cannot get rendered audio file: No active edit";
+        constructReply(reply, 1, errorString);
+        return reply;
+    }
+
+    const File tempDir = activeCybrEdit->getEdit().getTempDirectory(true);
+    const File tempFile = tempDir.getChildFile("render.wav");
+    if (!activeCybrEdit->saveActiveEdit(tempFile)) {
+        constructReply(reply, 1, "Cannot get rendered audio file: render failed");
+        return reply;
+    }
+
+    MemoryBlock block;
+    if (!tempFile.loadFileAsData(block)) {
+        constructReply(reply, 2, "Cannot get rendered audio file: failed to load rendered file");
+        return reply;
+    }
+
+    reply.addInt32(0);
+    reply.addString("Successfull retrived renderd audio file");
+    reply.addBlob(block);
+//    tempFile.deleteFile();
     return reply;
 }
 
