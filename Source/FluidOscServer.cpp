@@ -1146,7 +1146,7 @@ cybr::OSCMessage FluidOscServer::selectVst2PluginById(const cybr::OSCMessage& me
 
     for (PluginDescription pluginDesc : selectedTrack->edit.engine.getPluginManager().knownPluginList.getTypes()) {
         if (pluginDesc.pluginFormatName == "VST") {
-            if (pluginDesc.uid == pluginUid) {
+            if (pluginDesc.uniqueId == pluginUid) {
                 selectedPlugin = getOrCreatePluginByName(*selectedTrack, pluginDesc.name, pluginDesc.pluginFormatName, positionId);
                 reply.addInt32(0);
                 return reply;
@@ -1356,9 +1356,9 @@ cybr::OSCMessage FluidOscServer::setTrackWidth(const cybr::OSCMessage& message) 
     }
 
     float paramValue = message[0].getFloat32() * 0.5 + 0.5;
-    auto plugin = getOrCreatePluginByName(*selectedTrack, "cybr-width", "tracktion");
-    auto rack = dynamic_cast<te::RackInstance*>(plugin);
-    jassert(rack);
+//    auto plugin = getOrCreatePluginByName(*selectedTrack, "cybr-width", "tracktion");
+//    auto rack = dynamic_cast<te::RackInstance*>(plugin);
+//    jassert(rack);
 
     if (isAutomation) {
         for (auto macro : selectedTrack->macroParameterList.getMacroParameters()) {
@@ -1984,7 +1984,7 @@ cybr::OSCMessage FluidOscServer::setTrackPan(const cybr::OSCMessage& message) {
     }
 
     if (isAutomation) {
-        ensureWidthRack(*selectedTrack);
+//        ensureWidthRack(*selectedTrack);
         for (auto macro : selectedTrack->macroParameterList.getMacroParameters()) {
             if (macro->macroName == "pan automation") {
                 macro->getCurve().addPoint(timeSeconds, panValue * 0.5 + 0.5, curveValue);

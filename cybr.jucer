@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="gn3eC9" name="cybr" projectType="consoleapp" defines="DONT_SET_USING_JUCE_NAMESPACE=1 JUCER_ENABLE_GPL_MODE=1"
+<JUCERPROJECT id="gn3eC9" name="cybr" projectType="consoleapp" defines="DONT_SET_USING_JUCE_NAMESPACE=1 JUCER_ENABLE_GPL_MODE=1&#10;ENABLE_EXPERIMENTAL_TRACKTION_GRAPH=1"
               jucerFormatVersion="1" cppLanguageStandard="17" version="0.3.2">
   <MAINGROUP id="JTqeoX" name="cybr">
     <GROUP id="{5044F195-615F-1451-D592-38DAB2DA1E38}" name="Tests">
@@ -84,12 +84,13 @@
         <MODULEPATH id="tracktion_engine" path="tracktion_engine/modules"/>
         <MODULEPATH id="juce_osc" path="tracktion_engine/modules/juce/modules"/>
         <MODULEPATH id="cybr_osc" path="modules"/>
+        <MODULEPATH id="tracktion_graph" path="tracktion_engine/modules"/>
       </MODULEPATHS>
     </VS2017>
     <XCODE_MAC targetFolder="Builds/MacOSX" vstLegacyFolder="FST">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="1" name="Debug" osxCompatibility="10.14 SDK"/>
+        <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.14 SDK"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_opengl" path="tracktion_engine/modules/juce/modules"/>
@@ -109,6 +110,7 @@
         <MODULEPATH id="tracktion_engine" path="tracktion_engine/modules"/>
         <MODULEPATH id="juce_osc" path="tracktion_engine/modules/juce/modules"/>
         <MODULEPATH id="cybr_osc" path="modules"/>
+        <MODULEPATH id="tracktion_graph" path="tracktion_engine/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" vstLegacyFolder="FST">
@@ -134,6 +136,7 @@
         <MODULEPATH id="juce_audio_basics" path="tracktion_engine/modules/juce/modules"/>
         <MODULEPATH id="juce_osc" path="tracktion_engine/modules/juce/modules"/>
         <MODULEPATH id="cybr_osc" path="modules"/>
+        <MODULEPATH id="tracktion_graph" path="tracktion_engine/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>
@@ -155,6 +158,7 @@
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="tracktion_engine" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="tracktion_graph" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS/>

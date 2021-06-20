@@ -76,6 +76,8 @@ void CLIApp::initialise(const String& commandLine)
         }
     }
 
+    te::EditPlaybackContext::enableExperimentalGraphProcessing (true);
+
     // By default the te::DeviceManager is initialised automatically. However we
     // disabled the default initialisation by pasing a custom EngineBehavior
     // to the te::Engine constructor, necessitating an explicit .initialise()

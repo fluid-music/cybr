@@ -186,6 +186,13 @@ bool CybrEdit::saveActiveEdit(File outputFile, SamplePathMode mode) {
             }
         }
 
+        for (auto track : te::getAudioTracks(*edit)) {
+            for (auto clip : track->getClips()) {
+                if (auto audioClip = dynamic_cast<te::WaveAudioClip*>(clip)) {
+                    audioClip->timerCallback();
+                }
+            }
+        }
         bool useThread = false; // When true, perform render on the calling thread
         return te::Renderer::renderToFile({ "Chaz Render Job" },
                                    outputFile,

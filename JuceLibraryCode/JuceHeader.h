@@ -31,6 +31,7 @@
 #include <juce_opengl/juce_opengl.h>
 #include <juce_osc/juce_osc.h>
 #include <tracktion_engine/tracktion_engine.h>
+#include <tracktion_graph/tracktion_graph.h>
 
 
 #if defined (JUCE_PROJUCER_VERSION) && JUCE_PROJUCER_VERSION < JUCE_VERSION

@@ -63,6 +63,7 @@
 #define JUCE_MODULE_AVAILABLE_juce_opengl                1
 #define JUCE_MODULE_AVAILABLE_juce_osc                   1
 #define JUCE_MODULE_AVAILABLE_tracktion_engine           1
+#define JUCE_MODULE_AVAILABLE_tracktion_graph            1
 
 #define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
 
@@ -369,6 +370,13 @@
 
 #ifndef    ENABLE_EXPERIMENTAL_TRACKTION_GRAPH
  //#define ENABLE_EXPERIMENTAL_TRACKTION_GRAPH 0
+#endif
+
+//==============================================================================
+// tracktion_graph flags:
+
+#ifndef    GRAPH_UNIT_TESTS_QUICK_VALIDATE
+ //#define GRAPH_UNIT_TESTS_QUICK_VALIDATE 0
 #endif
 
 //==============================================================================

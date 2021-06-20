@@ -73,14 +73,14 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
     object->setProperty("automatableParamsCount", selectedPlugin->getNumAutomatableParameters());
     object->setProperty("pluginType", selectedPlugin->getPluginType());
 
-
     if (auto x = dynamic_cast<te::ExternalPlugin*>(selectedPlugin)) {
         // Annoyingly:
         // - PluginDescription.pluginFormatName is "VST"  or "VST3" (upper case)
         // - Plugin::getPluginType()       returns "vst"            (lower case)
         object->setProperty("externalPluginFormat", x->desc.pluginFormatName);
         object->setProperty("uidHex", x->getPluginUID());
-        object->setProperty("uidInt", x->desc.uid);
+        object->setProperty("uidInt", x->desc.uniqueId);
+        object->setProperty("uidDeprecated", x->desc.deprecatedUid);
         // update the plugin's .state value Tree
         x->flushPluginStateToValueTree();
         var state = x->state.getProperty(te::IDs::state);
