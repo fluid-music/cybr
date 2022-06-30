@@ -76,8 +76,6 @@ void CLIApp::initialise(const String& commandLine)
         }
     }
 
-    te::EditPlaybackContext::enableExperimentalGraphProcessing (true);
-
     // By default the te::DeviceManager is initialised automatically. However we
     // disabled the default initialisation by pasing a custom EngineBehavior
     // to the te::Engine constructor, necessitating an explicit .initialise()
@@ -148,7 +146,6 @@ void CLIApp::initialise(const String& commandLine)
         }
     }
 
-    engine.getPluginManager().createBuiltInType<OpenFrameworksPlugin>();
     appJobs.addChangeListener(this);
     MessageManager::getInstance()->callAsync([this, argumentList] { onRunning(argumentList); });
     
@@ -431,16 +428,6 @@ void CLIApp::onRunning(ArgumentList argumentList)
         } });
 
     cApp.addCommand({
-        "-j",
-        "-j",
-        "Experimental custom plugin. WORK-IN-PROGRESS",
-        "Just used for testing (for now) - This applies a custom plugin, which\n\
-        is the recomended way to insert audio processing into an edit.",
-        [this](auto&) {
-            if (cybrEdit) cybrEdit->junk();
-        } });
-
-    cApp.addCommand({
         "--print-length",
         "--print-length",
         "Print the length in seconds of the active edit",
@@ -470,31 +457,6 @@ void CLIApp::onRunning(ArgumentList argumentList)
                 return;
             }
             appJobs.play(*cybrEdit);
-        } });
-
-    cApp.addCommand({
-        "-r",
-        "-r",
-        "Record OSC while playing the Edit. WORK-IN-PROGRESS",
-        "Undocumented! TODO: doc",
-        [this](auto&) {
-             // Creating an OscInputDevice indirectly creates an OscInputDeviceInstance
-             // if one is needed. Where does the input device instance get instantiated?
-             // It happens from the `TransportControl::ensureContextAllocated` method,
-             // which is called whenever we play the edit.
-            auto result = createOscInputDevice(engine, OscInputDevice::name, options.listenPort);
-            if (result.wasOk()){
-                std::cout << "Created OscInputDevice: SUCCESS!" << std::endl;
-            } else {
-                std::cout << "Created OscInputDevice: FAILURE! " << result.getErrorMessage() << std::endl;
-            };
-
-            if (cybrEdit) {
-                cybrEdit->getOrCreateCybrHostAudioTrack();
-                appJobs.record(*cybrEdit);
-            } else {
-                std::cerr << "Failed to record osc, because there is no active CybrEdit" << std::endl << std::endl;
-            }
         } });
 
     cApp.addCommand({

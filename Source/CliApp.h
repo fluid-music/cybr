@@ -16,7 +16,6 @@
 #include "AppJobs.h"
 #include "OscSource.h"
 #include "CybrEdit.h"
-#include "OscInputDevice.h"
 #include "FluidOscServer.h"
 #include "FluidIpcServer.h"
 #include "CybrSearchPath.h"

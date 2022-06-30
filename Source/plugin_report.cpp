@@ -55,16 +55,22 @@ JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wnon-virtual-dtor",
 #endif
 
 #if (JUCE_PLUGINHOST_VST)
-#include "pluginterfaces/vst2.x/aeffect.h"
+// For reasons I (charles) do not entirely understand, we must create this
+// namespace to prevent clashes with the AEffect forward declaration in
+// "juce_audio_processors/utilities/juce_ExtensionsVisitor.h"
+namespace CybrVst2
+{
+#include <pluginterfaces/vst2.x/aeffect.h>
+#include <pluginterfaces/vst2.x/aeffectx.h>
+}
 #endif
 
-using namespace juce;
 
 juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
 
     // This is a recommended way of storing dynamic objects safely described here:
     // https://forum.juce.com/t/style-question-with-dynamicobject/9413
-    DynamicObject::Ptr object = new DynamicObject();
+    juce::DynamicObject::Ptr object = new juce::DynamicObject();
     object->setProperty("shortName10", selectedPlugin->getShortName(10));
     object->setProperty("name",selectedPlugin->getName());
     object->setProperty("vendor", selectedPlugin->getVendor());
@@ -83,15 +89,15 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
         object->setProperty("uidDeprecated", x->desc.deprecatedUid);
         // update the plugin's .state value Tree
         x->flushPluginStateToValueTree();
-        var state = x->state.getProperty(te::IDs::state);
-        MemoryBlock chunk;
+        juce::var state = x->state.getProperty(te::IDs::state);
+        juce::MemoryBlock chunk;
         if (chunk.fromBase64Encoding(state.toString())) {
-            String properBase64 = Base64::toBase64(chunk.getData(), chunk.getSize());
+            juce::String properBase64 = juce::Base64::toBase64(chunk.getData(), chunk.getSize());
             object->setProperty("tracktionXmlStateBase64", properBase64);
         }
         {
             x->getPluginStateFromTree(chunk);
-            String pluginState = Base64::toBase64(chunk.getData(), chunk.getSize());
+            juce::String pluginState = juce::Base64::toBase64(chunk.getData(), chunk.getSize());
             object->setProperty("pluginState", pluginState);
         }
 
@@ -100,8 +106,8 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
 
         juce::AudioPluginInstance* jucePlugin = x->getAudioPluginInstance();
 
-        MemoryBlock stateInfoBlock;
-        MemoryBlock programStateInfoBlock;
+        juce::MemoryBlock stateInfoBlock;
+        juce::MemoryBlock programStateInfoBlock;
 
         TRACKTION_ASSERT_MESSAGE_THREAD
         jucePlugin->suspendProcessing (true);
@@ -112,8 +118,8 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
         // of a .vstpreset file.
         jucePlugin->suspendProcessing(false);
 
-        String programStateInfo = Base64::toBase64(programStateInfoBlock.getData(), programStateInfoBlock.getSize());
-        String stateInfo  = Base64::toBase64(stateInfoBlock.getData(), stateInfoBlock.getSize());
+        juce::String programStateInfo = juce::Base64::toBase64(programStateInfoBlock.getData(), programStateInfoBlock.getSize());
+        juce::String stateInfo  = juce::Base64::toBase64(stateInfoBlock.getData(), stateInfoBlock.getSize());
 
         object->setProperty("currentProgramStateInfo", programStateInfo);
         object->setProperty("currentStateInfo", stateInfo);
@@ -139,14 +145,14 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
             object->setProperty("fxb", stateInfo);        // same as: currentStateInfo
             object->setProperty("fxp", programStateInfo); // same as: currentProgramStateInfo
 
-            MemoryBlock presetChunk;
-            if (VSTPluginFormat::getChunkData(jucePlugin, presetChunk, true)) {
-                object->setProperty("vst2State", Base64::toBase64(presetChunk.getData(), presetChunk.getSize()));
+            juce::MemoryBlock presetChunk;
+            if (juce::VSTPluginFormat::getChunkData(jucePlugin, presetChunk, true)) {
+                object->setProperty("vst2State", juce::Base64::toBase64(presetChunk.getData(), presetChunk.getSize()));
             } else {
                 object->setProperty("vst2StateError", 1);
             }
-            AEffect* vst2 = static_cast<AEffect*>(jucePlugin->getPlatformSpecificData());
-            object->setProperty("vst2Flags", (int64)vst2->flags);
+            CybrVst2::AEffect* vst2 = static_cast<CybrVst2::AEffect*>(jucePlugin->getPlatformSpecificData());
+            object->setProperty("vst2Flags", (juce::int64)vst2->flags);
 #endif
         } else if (x->isVST3()) {
 #if (JUCE_PLUGINHOST_VST3)
@@ -162,7 +168,7 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
                     if (auto* entry = presetFile.getEntry(Steinberg::Vst::kControllerState)) {
                         presetFile.seekToControllerState();
                         auto* stream = presetFile.getStream();
-                        MemoryBlock controllerState;
+                        juce::MemoryBlock controllerState;
                         controllerState.ensureSize(entry->size);
 
                         if (stream->write(controllerState.getData(), entry->size)) {
@@ -190,7 +196,7 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
                 object->setProperty("vst3IsAudioProcessor", true);
                 char strUID[33] = {0};
                 vstprocessor->iid.toString(strUID);
-                object->setProperty("vst3ProcessorId", String(strUID));
+                object->setProperty("vst3ProcessorId", juce::String(strUID));
             }
             vstprocessor->release();
 
@@ -207,7 +213,7 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
                     // Reaper's Base64 binary has an extra 8 bytes at the beginning of the stream,
                     // and an extra 8 bytes at the end.
                     memoryStream->truncateToCursor();
-                    String state = Base64::toBase64(memoryStream->getData(), memoryStream->getSize());
+                    juce::String state = juce::Base64::toBase64(memoryStream->getData(), memoryStream->getSize());
                     object->setProperty("vst3IComponentState", state);
                 }
 
@@ -227,7 +233,7 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
                         Steinberg::FUID fid = Steinberg::FUID::fromTUID(id);
                         char strUID[33] = {0};
                         fid.toString(strUID);
-                        object->setProperty("vst3EditControllerId", String(strUID));
+                        object->setProperty("vst3EditControllerId", juce::String(strUID));
                     }
 
                 }
@@ -248,13 +254,13 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
                         char strUID[33] = {0};
                         vsteditcontroller->iid.toString(strUID);
                         object->setProperty("vst3IsEditController", true);
-                        object->setProperty("vst3EditControllerId", String(strUID));
+                        object->setProperty("vst3EditControllerId", juce::String(strUID));
 
                         // get EditControllerState
                         auto* memoryStream = new Steinberg::MemoryStream();
                         if (vsteditcontroller->getState(memoryStream) == Steinberg::kResultOk) {
                             memoryStream->truncateToCursor();
-                            String state = Base64::toBase64(memoryStream->getData(), memoryStream->getSize());
+                            juce::String state = juce::Base64::toBase64(memoryStream->getData(), memoryStream->getSize());
                             object->setProperty("vst3EditControlerState", state);
                         };
                         memoryStream->release();
@@ -272,8 +278,8 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
 
 juce::var getAllParametersReport(te::Plugin* selectedPlugin, int steps) {
 
-    Array<var> tempArray;
-    var report = tempArray;
+    juce::Array<juce::var> tempArray;
+    juce::var report = tempArray;
 
     for (auto param : selectedPlugin->getAutomatableParameters()) {
         report.append(getSingleParameterReport(param, steps));
@@ -286,8 +292,8 @@ juce::var getSingleParameterReport(te::AutomatableParameter* param, int steps) {
     // var works like a Smart Pointer. It deletes reference counted objects in its
     // destructor. Jules describes this behavior here:
     // https://forum.juce.com/t/way-to-init-a-var-with-a-dynamicobject/12037
-    DynamicObject::Ptr object = new DynamicObject();
-    var report(object.getObject());
+    juce::DynamicObject::Ptr object = new juce::DynamicObject();
+    juce::var report(object.getObject());
 
     object->setProperty("name", param->paramName);
     object->setProperty("tracktionIndex", param->getPlugin()->indexOfAutomatableParameter(param));
@@ -309,8 +315,8 @@ juce::var getSingleParameterReport(te::AutomatableParameter* param, int steps) {
     auto end   = param->getValueRange().getEnd();
     // I believe that anything we put in a var will get cleaned up correctly if
     // the var is cleaned up correctly itself. It might be worth verifying.
-    Array<var> tempArray;
-    var valueRange = tempArray;
+    juce::Array<juce::var> tempArray;
+    juce::var valueRange = tempArray;
     valueRange.append(start);
     valueRange.append(end);
     // setProperty passes by reference, but I think that the underlying Var object
@@ -322,16 +328,16 @@ juce::var getSingleParameterReport(te::AutomatableParameter* param, int steps) {
         // stash the initial value so we can reset it later on
         auto currentValue = param->getCurrentValue();
 
-        var rangeAsString = tempArray;
-        var rangeAsStringWithLabel = tempArray;
-        var paramSteps = tempArray;
-        var inputSteps = tempArray;
+        juce::var rangeAsString = tempArray;
+        juce::var rangeAsStringWithLabel = tempArray;
+        juce::var paramSteps = tempArray;
+        juce::var inputSteps = tempArray;
 
-        param->setParameter(start, NotificationType::sendNotificationSync);
+        param->setParameter(start, juce::NotificationType::sendNotificationSync);
         rangeAsString.append(param->getCurrentValueAsString());
         rangeAsStringWithLabel.append(param->getCurrentValueAsStringWithLabel());
 
-        param->setParameter(end, NotificationType::sendNotificationSync);
+        param->setParameter(end, juce::NotificationType::sendNotificationSync);
         rangeAsString.append(param->getCurrentValueAsString());
         rangeAsStringWithLabel.append(param->getCurrentValueAsStringWithLabel());
 

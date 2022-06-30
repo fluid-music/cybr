@@ -21,7 +21,6 @@ class AppJobs : public juce::ChangeBroadcaster {
 public:
     /** Play the edit. This creates a NEW CybrEdit and a new te::Edit */
     void play(CybrEdit& cybrEdit);
-    void record(CybrEdit& cybrEdit);
 
     /** Add a CybrEdit if it is not already present. If succesful, AppJobs will
      own that CybrEdit, and is responsible for deleting it. Returns success. */

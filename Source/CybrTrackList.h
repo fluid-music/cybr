@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "CybrEdit.h"
 
+namespace te = tracktion_engine;
 class CybrEdit;
 const juce::Identifier CYBRTRACK ("CYBRTRACK");
 const juce::Identifier CE ("CE"); // CYBR EVENT

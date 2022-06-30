@@ -12,9 +12,7 @@
 #include <iostream>
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "cybr_helpers.h"
-#include "OpenFrameworksPlugin.h"
 #include "CybrTrackList.h"
-#include "OscInputDeviceInstance.h"
 #include "SamplePathMode.h"
 
 class CybrTrackList;
@@ -52,9 +50,6 @@ public:
     void flushPendingChanges();
     /** Remove All Tracks with the name (case insensitive) */
     void removeTracksNamed(const juce::String name);
-
-    /** WIP - testing custom plugin */
-    void junk();
 
     /** The CybrEdit uses a te::AudioTrack hosted in the Edit for for integrating with
      tracktion engine. Use this method to get it, creating it if it does not exist. */

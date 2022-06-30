@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="gn3eC9" name="cybr" projectType="consoleapp" defines="DONT_SET_USING_JUCE_NAMESPACE=1 JUCER_ENABLE_GPL_MODE=1&#10;ENABLE_EXPERIMENTAL_TRACKTION_GRAPH=1"
+<JUCERPROJECT id="gn3eC9" name="cybr" projectType="consoleapp" defines="DONT_SET_USING_JUCE_NAMESPACE=1 JUCER_ENABLE_GPL_MODE=1&#10;ENABLE_EXPERIMENTAL_TRACKTION_GRAPH=1&#10;JUCE_MODAL_LOOPS_PERMITTED=1"
               jucerFormatVersion="1" cppLanguageStandard="17" version="0.3.2">
   <MAINGROUP id="JTqeoX" name="cybr">
     <GROUP id="{5044F195-615F-1451-D592-38DAB2DA1E38}" name="Tests">
@@ -40,19 +40,7 @@
       <FILE id="pEVFDW" name="CybrSearchPath.cpp" compile="1" resource="0"
             file="Source/CybrSearchPath.cpp"/>
       <FILE id="WTPBIq" name="CybrTrackList.h" compile="0" resource="0" file="Source/CybrTrackList.h"/>
-      <FILE id="jUxSKN" name="OscInputDevice.h" compile="0" resource="0"
-            file="Source/OscInputDevice.h"/>
-      <FILE id="ARp7iI" name="OscInputDevice.cpp" compile="1" resource="0"
-            file="Source/OscInputDevice.cpp"/>
-      <FILE id="IxfNHJ" name="OscInputDeviceInstance.h" compile="0" resource="0"
-            file="Source/OscInputDeviceInstance.h"/>
-      <FILE id="QTRNah" name="OscInputDeviceInstance.cpp" compile="1" resource="0"
-            file="Source/OscInputDeviceInstance.cpp"/>
       <FILE id="aMJqHp" name="OscSource.h" compile="0" resource="0" file="Source/OscSource.h"/>
-      <FILE id="EOu6Gd" name="OpenFrameworksPlugin.h" compile="0" resource="0"
-            file="Source/OpenFrameworksPlugin.h"/>
-      <FILE id="xeKpc6" name="OpenFrameworksPlugin.cpp" compile="1" resource="0"
-            file="Source/OpenFrameworksPlugin.cpp"/>
       <FILE id="HfQVk6" name="SamplePathMode.h" compile="0" resource="0"
             file="Source/SamplePathMode.h"/>
       <FILE id="KWJolC" name="plugin_report.cpp" compile="1" resource="0"
@@ -89,8 +77,8 @@
     </VS2017>
     <XCODE_MAC targetFolder="Builds/MacOSX" vstLegacyFolder="FST">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" osxCompatibility="10.14 SDK"/>
-        <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.14 SDK"/>
+        <CONFIGURATION isDebug="1" name="Debug" osxCompatibility="10.14 SDK" macOSDeploymentTarget="10.14"/>
+        <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.14 SDK" macOSDeploymentTarget="10.14"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_opengl" path="tracktion_engine/modules/juce/modules"/>

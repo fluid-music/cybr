@@ -43,7 +43,7 @@
 
 #define JUCE_USE_DARK_SPLASH_SCREEN 1
 
-#define JUCE_PROJUCER_VERSION 0x60008
+#define JUCE_PROJUCER_VERSION 0x60102
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_cybr_osc                   1
@@ -348,6 +348,18 @@
  //#define TRACKTION_ENABLE_TIMESTRETCH_ELASTIQUE 0
 #endif
 
+#ifndef    TRACKTION_ENABLE_TIMESTRETCH_ELASTIQUE_IPP
+ //#define TRACKTION_ENABLE_TIMESTRETCH_ELASTIQUE_IPP 1
+#endif
+
+#ifndef    TRACKTION_ENABLE_TIMESTRETCH_RUBBERBAND
+ //#define TRACKTION_ENABLE_TIMESTRETCH_RUBBERBAND 0
+#endif
+
+#ifndef    TRACKTION_BUILD_RUBBERBAND
+ //#define TRACKTION_BUILD_RUBBERBAND 0
+#endif
+
 #ifndef    TRACKTION_ENABLE_TIMESTRETCH_SOUNDTOUCH
  #define   TRACKTION_ENABLE_TIMESTRETCH_SOUNDTOUCH 1
 #endif
@@ -360,6 +372,10 @@
  //#define TRACKTION_UNIT_TESTS 0
 #endif
 
+#ifndef    TRACKTION_BENCHMARKS
+ //#define TRACKTION_BENCHMARKS 0
+#endif
+
 #ifndef    TRACKTION_CHECK_FOR_SLOW_RENDERING
  //#define TRACKTION_CHECK_FOR_SLOW_RENDERING 0
 #endif
@@ -368,8 +384,8 @@
  //#define TRACKTION_AIR_WINDOWS 0
 #endif
 
-#ifndef    ENABLE_EXPERIMENTAL_TRACKTION_GRAPH
- //#define ENABLE_EXPERIMENTAL_TRACKTION_GRAPH 0
+#ifndef    TRACKTION_LOG_DEVICES
+ //#define TRACKTION_LOG_DEVICES 1
 #endif
 
 //==============================================================================

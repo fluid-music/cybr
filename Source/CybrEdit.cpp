@@ -40,16 +40,7 @@ void CybrEdit::timerCallback()
 
 void CybrEdit::flushPendingChanges()
 {
-    // Read any received OSC messages
-    auto inputDeviceInstances = edit->getAllInputDevices();
-    for (auto* instance : inputDeviceInstances) {
-        if (auto* oscInput = dynamic_cast<OscInputDeviceInstance*>(instance)) {
-            auto* t = cybrTrackList->getOrCreateLastTrack();
-            for (auto& message : oscInput->toMessageThread.read()) {
-                t->addEvent(message.streamTime, message.value);
-            }
-        }
-    }
+    // This used to be used for receiving OSC messages, back when CYBR was still intended to be an OSC receiver
 }
 
 void CybrEdit::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged, const juce::Identifier &property)
@@ -144,23 +135,6 @@ void CybrEdit::listState() {
     std::cout << std::endl;
 }
 
-void CybrEdit::junk()
-{
-   if (auto audioTrack = te::getFirstAudioTrack(*edit)) {
-        // insert my plugin
-        if (auto plugin = audioTrack->pluginList.insertPlugin(OpenFrameworksPlugin::create(), 0)) {
-            std::cout << "My Plugin Added!" << std::endl;
-            if (auto ofPlugin = dynamic_cast<OpenFrameworksPlugin*>(plugin.get())){
-                std::cout << "My Plugin is correct type!" << std::endl;
-                ofPlugin->semitonesValue.setValue(30, nullptr);
-            }
-        } else {
-            std::cout << "Failed to add plugin" << std::endl;
-        }
-    };
-    std::cout << std::endl;
-}
-
 bool CybrEdit::saveActiveEdit(File outputFile, SamplePathMode mode) {
     auto outputExt = outputFile.getFileExtension().toLowerCase(); // resolve relative if needed
     
@@ -189,7 +163,11 @@ bool CybrEdit::saveActiveEdit(File outputFile, SamplePathMode mode) {
         for (auto track : te::getAudioTracks(*edit)) {
             for (auto clip : track->getClips()) {
                 if (auto audioClip = dynamic_cast<te::WaveAudioClip*>(clip)) {
-                    audioClip->timerCallback();
+                    // This fixes a bug where mp3 files prohibit rendering. However,
+                    // It requires hacking the tracktion source to make AudioClipBase
+                    // publicly inherit from juce::Timer (and moving the timerCallback
+                    // override definition under "public:" in the header file.)
+//                    audioClip->timerCallback();
                 }
             }
         }
