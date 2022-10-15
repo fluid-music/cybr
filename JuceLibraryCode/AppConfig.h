@@ -43,7 +43,7 @@
 
 #define JUCE_USE_DARK_SPLASH_SCREEN 1
 
-#define JUCE_PROJUCER_VERSION 0x60102
+#define JUCE_PROJUCER_VERSION 0x60106
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_cybr_osc                   1

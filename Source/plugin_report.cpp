@@ -12,43 +12,44 @@
 
 #if (JUCE_PLUGINHOST_VST3)
 
-JUCE_BEGIN_IGNORE_WARNINGS_LEVEL_MSVC (0, 4505 4702)
+JUCE_BEGIN_IGNORE_WARNINGS_LEVEL_MSVC(0, 4505 4702)
 
-JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE ("-Wnon-virtual-dtor",
-                                     "-Wreorder",
-                                     "-Wunsequenced",
-                                     "-Wint-to-pointer-cast",
-                                     "-Wunused-parameter",
-                                     "-Wconversion",
-                                     "-Woverloaded-virtual",
-                                     "-Wshadow",
-                                     "-Wdeprecated-register",
-                                     "-Wunused-function",
-                                     "-Wsign-conversion",
-                                     "-Wsign-compare",
-                                     "-Wdelete-non-virtual-dtor",
-                                     "-Wdeprecated-declarations",
-                                     "-Wextra-semi",
-                                     "-Wmissing-braces",
-                                     "-Wswitch-default",
-                                     "-Wshadow-field",
-                                     "-Wpragma-pack",
-                                     "-Wcomma",
-                                     "-Wzero-as-null-pointer-constant",
-                                     "-Winconsistent-missing-destructor-override",
-                                     "-Wcast-align",
-                                     "-Wignored-qualifiers",
-                                     "-Wmissing-field-initializers",
-                                     "-Wformat=",
-                                     "-Wformat",
-                                     "-Wpedantic",
-                                     "-Wextra",
-                                     "-Wclass-memaccess")
+JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE("-Wnon-virtual-dtor",
+                                    "-Wreorder",
+                                    "-Wunsequenced",
+                                    "-Wint-to-pointer-cast",
+                                    "-Wunused-parameter",
+                                    "-Wconversion",
+                                    "-Woverloaded-virtual",
+                                    "-Wshadow",
+                                    "-Wdeprecated-register",
+                                    "-Wunused-function",
+                                    "-Wsign-conversion",
+                                    "-Wsign-compare",
+                                    "-Wdelete-non-virtual-dtor",
+                                    "-Wdeprecated-declarations",
+                                    "-Wextra-semi",
+                                    "-Wmissing-braces",
+                                    "-Wswitch-default",
+                                    "-Wshadow-field",
+                                    "-Wpragma-pack",
+                                    "-Wcomma",
+                                    "-Wzero-as-null-pointer-constant",
+                                    "-Winconsistent-missing-destructor-override",
+                                    "-Wcast-align",
+                                    "-Wignored-qualifiers",
+                                    "-Wmissing-field-initializers",
+                                    "-Wformat=",
+                                    "-Wformat",
+                                    "-Wpedantic",
+                                    "-Wextra",
+                                    "-Wclass-memaccess")
 
 #include <pluginterfaces/vst/ivstcomponent.h>
 #include <pluginterfaces/vst/ivstaudioprocessor.h>
 #include <pluginterfaces/vst/ivsteditcontroller.h>
 #include <pluginterfaces/base/ipluginbase.h>
+#include <pluginterfaces/base/funknown.h>
 #include <pluginterfaces/vst/vsttypes.h>
 #include <public.sdk/source/common/memorystream.h>
 #include <public.sdk/source/vst/vstpresetfile.h>
@@ -65,21 +66,33 @@ namespace CybrVst2
 }
 #endif
 
+struct Visitor : public juce::ExtensionsVisitor
+{
+    void visitUnknown(const Unknown &) override {}
+    void visitVST3Client(const VST3Client &c) override { pIComponent = c.getIComponentPtr(); }
+    void visitVSTClient(const VSTClient &c) override { pAEffect = c.getAEffectPtr(); }
+    void visitAudioUnitClient(const AudioUnitClient &) override {}
 
-juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
+    AEffect *pAEffect = nullptr;
+    Steinberg::Vst::IComponent *pIComponent = nullptr;
+};
+
+juce::DynamicObject::Ptr getPluginReportObject(te::Plugin *selectedPlugin)
+{
 
     // This is a recommended way of storing dynamic objects safely described here:
     // https://forum.juce.com/t/style-question-with-dynamicobject/9413
     juce::DynamicObject::Ptr object = new juce::DynamicObject();
     object->setProperty("shortName10", selectedPlugin->getShortName(10));
-    object->setProperty("name",selectedPlugin->getName());
+    object->setProperty("name", selectedPlugin->getName());
     object->setProperty("vendor", selectedPlugin->getVendor());
     object->setProperty("isSynth", selectedPlugin->isSynth());
     object->setProperty("idString", selectedPlugin->getIdentifierString());
     object->setProperty("automatableParamsCount", selectedPlugin->getNumAutomatableParameters());
     object->setProperty("pluginType", selectedPlugin->getPluginType());
 
-    if (auto x = dynamic_cast<te::ExternalPlugin*>(selectedPlugin)) {
+    if (auto x = dynamic_cast<te::ExternalPlugin *>(selectedPlugin))
+    {
         // Annoyingly:
         // - PluginDescription.pluginFormatName is "VST"  or "VST3" (upper case)
         // - Plugin::getPluginType()       returns "vst"            (lower case)
@@ -91,7 +104,8 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
         x->flushPluginStateToValueTree();
         juce::var state = x->state.getProperty(te::IDs::state);
         juce::MemoryBlock chunk;
-        if (chunk.fromBase64Encoding(state.toString())) {
+        if (chunk.fromBase64Encoding(state.toString()))
+        {
             juce::String properBase64 = juce::Base64::toBase64(chunk.getData(), chunk.getSize());
             object->setProperty("tracktionXmlStateBase64", properBase64);
         }
@@ -104,13 +118,13 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
         object->setProperty("tracktionXml", x->elementState.toXmlString());
         // Try a different method of getting the state
 
-        juce::AudioPluginInstance* jucePlugin = x->getAudioPluginInstance();
+        juce::AudioPluginInstance *jucePlugin = x->getAudioPluginInstance();
 
         juce::MemoryBlock stateInfoBlock;
         juce::MemoryBlock programStateInfoBlock;
 
         TRACKTION_ASSERT_MESSAGE_THREAD
-        jucePlugin->suspendProcessing (true);
+        jucePlugin->suspendProcessing(true);
         jucePlugin->getCurrentProgramStateInformation(programStateInfoBlock); // If this is a VST2, get fxp (patch)
         jucePlugin->getStateInformation(stateInfoBlock);                      // If this is a VST2, get fxb (bank)
         // Note: I tried to get the VST3 IEditController state from this chunk, but it didn't work.
@@ -119,19 +133,20 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
         jucePlugin->suspendProcessing(false);
 
         juce::String programStateInfo = juce::Base64::toBase64(programStateInfoBlock.getData(), programStateInfoBlock.getSize());
-        juce::String stateInfo  = juce::Base64::toBase64(stateInfoBlock.getData(), stateInfoBlock.getSize());
+        juce::String stateInfo = juce::Base64::toBase64(stateInfoBlock.getData(), stateInfoBlock.getSize());
 
         object->setProperty("currentProgramStateInfo", programStateInfo);
         object->setProperty("currentStateInfo", stateInfo);
 
         object->setProperty("numAudioInputChannels", jucePlugin->getNumInputChannels());
         object->setProperty("numAudioOutputChannels", jucePlugin->getNumOutputChannels());
-        object->setProperty("numPrograms", jucePlugin->getNumPrograms());     // number of programs in the bank
+        object->setProperty("numPrograms", jucePlugin->getNumPrograms());            // number of programs in the bank
         object->setProperty("currentProgramIndex", jucePlugin->getCurrentProgram()); // program number within (bank)
         object->setProperty("currentProgramName", jucePlugin->getProgramName(jucePlugin->getCurrentProgram()));
 
         // Dynamic cast doesn't work, but I don't know why: if (auto* vst = dynamic_cast<VSTPluginInstance*> (plugin)) {
-        if (x->isVST()) {
+        if (x->isVST())
+        {
             // if for some reason, we wanted to get the AEffect, we could do it like this:
             // #if (JUCE_PLUGINHOST_VST)
             // #include "pluginterfaces/vst2.x/aeffect.h" // required
@@ -146,37 +161,46 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
             object->setProperty("fxp", programStateInfo); // same as: currentProgramStateInfo
 
             juce::MemoryBlock presetChunk;
-            if (juce::VSTPluginFormat::getChunkData(jucePlugin, presetChunk, true)) {
+            if (juce::VSTPluginFormat::getChunkData(jucePlugin, presetChunk, true))
+            {
                 object->setProperty("vst2State", juce::Base64::toBase64(presetChunk.getData(), presetChunk.getSize()));
-            } else {
+            }
+            else
+            {
                 object->setProperty("vst2StateError", 1);
             }
-            CybrVst2::AEffect* vst2 = static_cast<CybrVst2::AEffect*>(jucePlugin->getPlatformSpecificData());
+            CybrVst2::AEffect *vst2 = static_cast<CybrVst2::AEffect *>(jucePlugin->getPlatformSpecificData());
             object->setProperty("vst2Flags", (juce::int64)vst2->flags);
 #endif
-        } else if (x->isVST3()) {
+        }
+        else if (x->isVST3())
+        {
 #if (JUCE_PLUGINHOST_VST3)
             // In the block below, I tried to get the IEditController state from the preset. However,
             // It appears that the data returned by JucePlugin::getStateInformation is not the same as
             // the contents of a .vstpreset file.
             {
-                auto* presetStream = new Steinberg::MemoryStream(stateInfoBlock.getData(), stateInfoBlock.getSize());
+                auto *presetStream = new Steinberg::MemoryStream(stateInfoBlock.getData(), stateInfoBlock.getSize());
                 Steinberg::Vst::PresetFile presetFile(presetStream);
                 presetFile.readChunkList();
-                if (presetFile.contains(Steinberg::Vst::kControllerState)) {
+                if (presetFile.contains(Steinberg::Vst::kControllerState))
+                {
                     object->setProperty("vst3FoundControllerState", true);
-                    if (auto* entry = presetFile.getEntry(Steinberg::Vst::kControllerState)) {
+                    if (auto *entry = presetFile.getEntry(Steinberg::Vst::kControllerState))
+                    {
                         presetFile.seekToControllerState();
-                        auto* stream = presetFile.getStream();
+                        auto *stream = presetFile.getStream();
                         juce::MemoryBlock controllerState;
                         controllerState.ensureSize(entry->size);
 
-                        if (stream->write(controllerState.getData(), entry->size)) {
+                        if (stream->write(controllerState.getData(), entry->size))
+                        {
                             object->setProperty("vst3ControllerState", controllerState);
                         }
                     }
                 }
-                if (presetFile.contains(Steinberg::Vst::kComponentState)) {
+                if (presetFile.contains(Steinberg::Vst::kComponentState))
+                {
                     object->setProperty("vst3FoundComponentState", true);
                 }
                 presetStream->release();
@@ -186,12 +210,11 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
             // https://forum.juce.com/t/fr-vst3pluginformat-loadfromvstpresetfile/24881/7
             // However, the code on the forum is for writing to plugin's state, while I want to
             // read the plugin state.
-            auto funknown = static_cast<Steinberg::FUnknown*> (jucePlugin->getPlatformSpecificData());
-            Steinberg::Vst::IComponent* vstcomponent = nullptr;
-            Steinberg::Vst::IAudioProcessor* vstprocessor = nullptr;
+            auto funknown = static_cast<Steinberg::FUnknown *>(jucePlugin->getPlatformSpecificData());
+            Steinberg::Vst::IComponent *vstcomponent = nullptr;
+            Steinberg::Vst::IAudioProcessor *vstprocessor = nullptr;
 
-            if (funknown->queryInterface(Steinberg::Vst::IAudioProcessor_iid, (void**) &vstprocessor) == Steinberg::kResultOk
-                && vstprocessor != nullptr)
+            if (funknown->queryInterface(Steinberg::Vst::IAudioProcessor_iid, (void **)&vstprocessor) == Steinberg::kResultOk && vstprocessor != nullptr)
             {
                 object->setProperty("vst3IsAudioProcessor", true);
                 char strUID[33] = {0};
@@ -200,15 +223,17 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
             }
             vstprocessor->release();
 
-            if (funknown->queryInterface (Steinberg::Vst::IComponent_iid, (void**) &vstcomponent) == Steinberg::kResultOk
-                && vstcomponent != nullptr)
+            if (funknown->queryInterface(Steinberg::Vst::IComponent_iid, (void **)&vstcomponent) == Steinberg::kResultOk && vstcomponent != nullptr)
             {
                 object->setProperty("vst3IsComponent", true);
-                auto* memoryStream = new Steinberg::MemoryStream();
+                auto *memoryStream = new Steinberg::MemoryStream();
                 auto result = vstcomponent->getState(memoryStream);
-                if (result != Steinberg::kResultOk) {
+                if (result != Steinberg::kResultOk)
+                {
                     object->setProperty("vst3StateError", result);
-                } else {
+                }
+                else
+                {
                     // The output of this looks very similar to the way that REAPER stores VSTs
                     // Reaper's Base64 binary has an extra 8 bytes at the beginning of the stream,
                     // and an extra 8 bytes at the end.
@@ -227,20 +252,21 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
                     // (i.e. is derived from SingleComponentEffect), we must get the plugin using
                     // queryInterface(Steinberg::Vst::IEditController_iid, ...)
                     Steinberg::tresult result = vstcomponent->getControllerClassId(id);
-                    if (result != Steinberg::kResultOk) {
+                    if (result != Steinberg::kResultOk)
+                    {
                         object->setProperty("vst3EditControllerIdError", result);
-                    } else {
+                    }
+                    else
+                    {
                         Steinberg::FUID fid = Steinberg::FUID::fromTUID(id);
                         char strUID[33] = {0};
                         fid.toString(strUID);
                         object->setProperty("vst3EditControllerId", juce::String(strUID));
                     }
-
                 }
                 {
-                    Steinberg::Vst::IEditController* vsteditcontroller = nullptr;
-                    if (vstcomponent->queryInterface(Steinberg::Vst::IEditController_iid, (void**) &vsteditcontroller) == Steinberg::kResultOk
-                        && vsteditcontroller != nullptr)
+                    Steinberg::Vst::IEditController *vsteditcontroller = nullptr;
+                    if (vstcomponent->queryInterface(Steinberg::Vst::IEditController_iid, (void **)&vsteditcontroller) == Steinberg::kResultOk && vsteditcontroller != nullptr)
                     {
                         // I believe that this will not overlap with a successful call to
                         // getControllderClassId above, but I don't know for sure. I suspect
@@ -257,8 +283,9 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
                         object->setProperty("vst3EditControllerId", juce::String(strUID));
 
                         // get EditControllerState
-                        auto* memoryStream = new Steinberg::MemoryStream();
-                        if (vsteditcontroller->getState(memoryStream) == Steinberg::kResultOk) {
+                        auto *memoryStream = new Steinberg::MemoryStream();
+                        if (vsteditcontroller->getState(memoryStream) == Steinberg::kResultOk)
+                        {
                             memoryStream->truncateToCursor();
                             juce::String state = juce::Base64::toBase64(memoryStream->getData(), memoryStream->getSize());
                             object->setProperty("vst3EditControlerState", state);
@@ -268,7 +295,35 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
                 }
                 memoryStream->release();
                 vstcomponent->release();
-           }
+            }
+
+            {
+                // A final attempt to get the iComponent using the Visitor pattern
+                // https://forum.juce.com/t/how-to-get-vst3-class-id-aka-cid-aka-component-id/41041/15
+                Visitor visitor;
+                jucePlugin->getExtensions(visitor);
+                if (visitor.pIComponent)
+                {
+                    Steinberg::TUID classId = {0};
+                    auto result = visitor.pIComponent->getControllerClassId(classId);
+
+                    if (result == Steinberg::kResultTrue)
+                    {
+                        Steinberg::FUID fuid = Steinberg::FUID::fromTUID(classId);
+                        char charArray[33] = {0};
+                        fuid.toString(charArray);
+                        object->setProperty("vst3ClassId", charArray);
+                    }
+
+                    char iid[33] = {0};
+                    visitor.pIComponent->iid.toString(iid);
+                    object->setProperty("vst3iidString", juce::String(iid));
+                }
+                if (visitor.pAEffect)
+                {
+                    std::cout << "what?" << std::endl;
+                }
+            }
 #endif
         }
     } // end isExternalPlugin block
@@ -276,18 +331,21 @@ juce::DynamicObject::Ptr getPluginReportObject(te::Plugin* selectedPlugin) {
     return object;
 }
 
-juce::var getAllParametersReport(te::Plugin* selectedPlugin, int steps) {
+juce::var getAllParametersReport(te::Plugin *selectedPlugin, int steps)
+{
 
     juce::Array<juce::var> tempArray;
     juce::var report = tempArray;
 
-    for (auto param : selectedPlugin->getAutomatableParameters()) {
+    for (auto param : selectedPlugin->getAutomatableParameters())
+    {
         report.append(getSingleParameterReport(param, steps));
     }
     return report;
 }
 
-juce::var getSingleParameterReport(te::AutomatableParameter* param, int steps) {
+juce::var getSingleParameterReport(te::AutomatableParameter *param, int steps)
+{
     // I believe appending a new DynamicObject to a var is memory safe. My understanding:
     // var works like a Smart Pointer. It deletes reference counted objects in its
     // destructor. Jules describes this behavior here:
@@ -312,7 +370,7 @@ juce::var getSingleParameterReport(te::AutomatableParameter* param, int steps) {
     object->setProperty("currentLabel", param->getLabel());
 
     auto start = param->getValueRange().getStart();
-    auto end   = param->getValueRange().getEnd();
+    auto end = param->getValueRange().getEnd();
     // I believe that anything we put in a var will get cleaned up correctly if
     // the var is cleaned up correctly itself. It might be worth verifying.
     juce::Array<juce::var> tempArray;
@@ -324,7 +382,8 @@ juce::var getSingleParameterReport(te::AutomatableParameter* param, int steps) {
     // that array get copied as well. We have to .setProperty AFTER adding values.
     object->setProperty("inputValueRange", valueRange);
 
-    if (steps) {
+    if (steps)
+    {
         // stash the initial value so we can reset it later on
         auto currentValue = param->getCurrentValue();
 
@@ -342,10 +401,11 @@ juce::var getSingleParameterReport(te::AutomatableParameter* param, int steps) {
         rangeAsStringWithLabel.append(param->getCurrentValueAsStringWithLabel());
 
         // NOTE: these assume a 0-1 range. I could use the range provided by the param
-        float stepSize   = (steps == 1) ? 0.0 : 1.0 / (steps - 1);
+        float stepSize = (steps == 1) ? 0.0 : 1.0 / (steps - 1);
         float startValue = (steps == 1) ? 0.5 : 0.0;
-        for (int i = 0; i < steps; i++) {
-            float inputValue = startValue + (i*stepSize);
+        for (int i = 0; i < steps; i++)
+        {
+            float inputValue = startValue + (i * stepSize);
             param->setParameter(inputValue, juce::NotificationType::sendNotificationSync);
             paramSteps.append(param->getCurrentValueAsString());
             inputSteps.append(inputValue);
@@ -361,4 +421,3 @@ juce::var getSingleParameterReport(te::AutomatableParameter* param, int steps) {
 
     return report;
 }
-
